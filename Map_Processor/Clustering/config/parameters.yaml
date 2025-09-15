@@ -1,0 +1,10 @@
+clustering:
+
+
+  clustering:
+    enable: true
+    publish: true
+    count: 4
+    outlier_removal: true
+    method: 2 #0 : Kmeans ,2: Meanshift
+  

@@ -1,0 +1,65 @@
+octomap_frontier_processor:
+  octomap:
+    publish: true
+    enforce_bounding_box : true
+    resolution: 0.4
+    prob_hit: 0.7
+    prob_miss: 0.4
+    #tugboat
+    # bbx_min_x: 0.0
+    # bbx_min_y: 0.0
+    # bbx_min_z: 0
+    # bbx_max_x: 30.0
+    # bbx_max_y: 14.0
+    # bbx_max_z: 3
+    #House
+    bbx_min_x:  -2.0
+    bbx_min_y: -28.0
+    bbx_min_z: 0.0
+    bbx_max_x: 30.0
+    bbx_max_y: 0
+    bbx_max_z: 3.0
+    #Forest Patch
+    # bbx_min_x: -60.0
+    # bbx_min_y: -60.0
+    # bbx_min_z: 0.0
+    # bbx_max_x: 0.0
+    # bbx_max_y: 0.0
+    # bbx_max_z: 3
+  
+  frontier:
+    publish: true
+    distance_within_reach: 5
+    z_normal_max: 90  #90% from maximum will be ignored, Simiple way to do ground segmentation on slanting surfaces
+    z_normal_min: 90  
+    x_normal_max: 100  
+    x_normal_min: 100  
+    y_normal_max: 100  
+    y_normal_min: 100  
+  
+  queues:
+    new_points_queue_size: 1
+  
+  frame_id:
+    fixed: $(arg robot_namespace)/map_locus
+    base: $(arg robot_namespace)/fcu
+    # lidar: $(arg robot_namespace)/os_lidar
+    lidar: $(arg robot_namespace)/livox
+    bbx: $(arg robot_namespace)/map_locus
+
+  lidar:
+      max_range: 20.0 # [m] max range of points to be included as occupied, free space is updated up to min(max_range, free_ray_distance)
+      free_ray_distance: 19.0 # [m] max distance for free space raycasting
+
+      # fallback values used for free space raycasting for missing data, uses pointcloud dimensions and camera_info by default
+      horizontal_fov_angle: deg(360.0)
+      vertical_fov_angle: deg(59)
+      vertical_fov_scale_down: 2  #The lidar is blocked on the top by the drone. To prevent this, we limit the scale of field of view.
+      vertical_fov_scale_up: 2
+      horizontal_rays: 100
+      vertical_rays: 50
+      # what to do when data in the organized pointcloud is missing (is nan)
+      unknown_rays:
+        update_free_space: true # update free space when data at the specific point is missing?
+        free_ray_distance_unknown: 14 # [m] ray length for raycasting
+

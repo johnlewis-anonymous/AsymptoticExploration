@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<package>
+  <name>clustering</name>
+  <version>0.0.0</version>
+  <description>Front end odometry package</description>
+  <author email="john.lewis@tecnico.ulisboa.pt">John Lewis D</author>
+  <maintainer email="john.lewis@tecnico.ulisboa.pt">John Lewis D</maintainer>
+
+  <license>GPLv2</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <!-- System dependencies -->
+  <build_depend>mlpack</build_depend>
+  <run_depend>mlpack</run_depend>
+
+  <build_depend>roscpp</build_depend>
+  <build_depend>nodelet</build_depend>
+  <build_depend>message_generation</build_depend>
+  <build_depend>pcl_ros</build_depend>
+  <build_depend>pcl_conversions</build_depend>
+  <build_depend>eigen_conversions</build_depend>
+  <build_depend>diagnostic_msgs</build_depend>
+  <build_depend>geometry_msgs</build_depend>
+  <build_depend>nav_msgs</build_depend>
+  <build_depend>sensor_msgs</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <build_depend>tf</build_depend>
+  <build_depend>tf2</build_depend>
+  <build_depend>tf2_ros</build_depend>
+  <build_depend>tf2_geometry_msgs</build_depend>
+  <build_depend>tf2_sensor_msgs</build_depend>
+  <build_depend>dynamic_reconfigure</build_depend>
+  <build_depend>message_filters</build_depend>
+  <build_depend>pluginlib</build_depend>
+  <build_depend>octomap_ros</build_depend>
+  <build_depend>octomap_msgs</build_depend>
+
+  <run_depend>roscpp</run_depend>
+  <run_depend>nodelet</run_depend>
+  <run_depend>message_runtime</run_depend>
+  <run_depend>pcl_ros</run_depend>
+  <run_depend>pcl_conversions</run_depend>
+  <run_depend>eigen_conversions</run_depend>
+  <run_depend>diagnostic_msgs</run_depend>
+  <run_depend>geometry_msgs</run_depend>
+  <run_depend>nav_msgs</run_depend>
+  <run_depend>sensor_msgs</run_depend>
+  <run_depend>std_msgs</run_depend>
+  <run_depend>tf</run_depend>
+  <run_depend>tf2</run_depend>
+  <run_depend>tf2_ros</run_depend>
+  <run_depend>tf2_geometry_msgs</run_depend>
+  <run_depend>tf2_sensor_msgs</run_depend>
+  <run_depend>dynamic_reconfigure</run_depend>
+  <run_depend>message_filters</run_depend>
+  <run_depend>pluginlib</run_depend>
+  <run_depend>octomap_ros</run_depend>
+  <run_depend>octomap_msgs</run_depend>
+
+  <export>
+    <nodelet plugin="${prefix}/clustering_plugins.xml" />
+  </export>
+</package>

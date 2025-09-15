@@ -1,0 +1,12 @@
+viewpoint_generator:
+  
+  viewpoint:
+    enable: true
+    publish: true
+    method: 1 # 0:Centroids 1: larics 
+    bucket_distance: 5.5 #distance between previous viewpoints within which the new viewpoint is considered to be visited 
+    box_length: 5.0 #for calculating information gain
+    k_gain: 100.0  #Larics exploration factor
+    # Constant; small lambda means that motion is cheap and gives priority
+    lambda: 0.1386 #Larics exploration factor
+    

@@ -1,0 +1,22 @@
+<launch>
+<!-- Launch the octomapping_frontier_detection_node -->
+<arg name="robot_namespace" default="$(env UAV_NAME)"/>
+<arg name="nodelet_manager" default="$(arg robot_namespace)_nodelet_manager" />
+<arg name="respawn" value="true"/>
+
+<group ns="$(arg robot_namespace)">
+    <rosparam file="$(find viewpoint_generator)/config/parameters.yaml" subst_value="true"/>
+    
+    <!-- Match the regular node name exactly -->
+    <node pkg="nodelet" type="nodelet" name="viewpoint_generator" 
+          args="load viewpoint_generator/viewpoint_generatorNodelet $(arg nodelet_manager)" 
+          output="screen" 
+          respawn="$(arg respawn)">
+        <remap from="~POSE_TOPIC" to="/$(arg robot_namespace)/locus/odometry"/>
+        <remap from="~CLUSTER_TOPIC" to="/$(arg robot_namespace)/clustering/clusters"/>
+        <remap from="~OCTOMAP_TOPIC" to="/$(arg robot_namespace)/octomap_frontier_processor/octomap"/>
+        <remap from="~DIAGNOSTICS_TOPIC" to="/$(arg robot_namespace)/control_manager/diagnostics"/>
+        <remap from="~VISITED_VIEWPOINTS_TOPIC" to="/$(arg robot_namespace)/activeness/visited_viewpoints"/>
+    </node>
+</group>
+</launch>

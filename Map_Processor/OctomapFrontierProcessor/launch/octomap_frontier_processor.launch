@@ -1,0 +1,13 @@
+<launch>
+<arg name="robot_namespace" default="$(env UAV_NAME)"/>
+<group ns="$(arg robot_namespace)">
+    <rosparam file="$(find octomapper_frontier_processor)/config/parameters.yaml" subst_value="true" />
+    <node pkg="octomapper_frontier_processor"
+            type="octomapper_frontier_processor_node"
+            name="octomap_frontier_processor"
+            output="screen">
+        <remap from="~NEW_POINTS_TOPIC" to="/$(arg robot_namespace)/locus/octree_map_updates"/>
+        <remap from="~POSE_TOPIC" to="/$(arg robot_namespace)/locus/odometry"/>
+    </node>
+</group>
+</launch>

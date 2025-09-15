@@ -1,0 +1,7 @@
+<library path="lib/liboctomapper_frontier_processor_nodelet">
+  <class name="octomapper_frontier_processor/octomapper_frontier_processorNodelet" type="octomapper_frontier_processor::octomapper_frontier_processorNodelet" base_class_type="nodelet::Nodelet">
+    <description>
+      Octomapper Frontier Processor nodelet for octomap generation and frontier detection.
+    </description>
+  </class>
+</library>

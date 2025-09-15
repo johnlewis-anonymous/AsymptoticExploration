@@ -1,0 +1,19 @@
+<launch>
+<!-- Launch the octomapping_frontier_detection_node -->
+<arg name="robot_namespace" default="$(env UAV_NAME)"/>
+<arg name="nodelet_manager" default="$(arg robot_namespace)_nodelet_manager" />
+<arg name="respawn" value="true"/>
+
+<group ns="$(arg robot_namespace)">
+    <rosparam file="$(find octomapper_frontier_processor)/config/parameters.yaml" subst_value="true"/>
+    
+    <!-- Match the regular node name exactly -->
+    <node pkg="nodelet" type="nodelet" name="octomap_frontier_processor" 
+          args="load octomapper_frontier_processor/octomapper_frontier_processorNodelet $(arg nodelet_manager)" 
+          output="screen" 
+          respawn="$(arg respawn)">
+        <remap from="~NEW_POINTS_TOPIC" to="/$(arg robot_namespace)/locus/octree_map_updates"/>
+        <remap from="~POSE_TOPIC" to="/$(arg robot_namespace)/locus/odometry"/>
+    </node>
+</group>
+</launch>

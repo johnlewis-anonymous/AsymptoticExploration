@@ -1,0 +1,16 @@
+<launch>
+<arg name="robot_namespace" default="$(env UAV_NAME)"/>
+<group ns="$(arg robot_namespace)">
+    <rosparam file="$(find viewpoint_generator)/config/parameters.yaml" subst_value="true" />
+    <node pkg="viewpoint_generator"
+            type="viewpoint_generator_node"
+            name="viewpoint_generator"
+            output="screen">
+        <remap from="~POSE_TOPIC" to="/$(arg robot_namespace)/locus/odometry"/>
+        <remap from="~CLUSTER_TOPIC" to="/$(arg robot_namespace)/clustering/clusters"/>
+        <remap from="~OCTOMAP_TOPIC" to="/$(arg robot_namespace)/octomap_frontier_processor/octomap"/>
+        <remap from="~DIAGNOSTICS_TOPIC" to="/$(arg robot_namespace)/control_manager/diagnostics"/>
+        <remap from="~VISITED_VIEWPOINTS_TOPIC" to="/$(arg robot_namespace)/activeness/visited_viewpoints"/>
+    </node>
+</group>
+</launch>

@@ -1,0 +1,7 @@
+<library path="lib/libviewpoint_generator_nodelet">
+  <class name="viewpoint_generator/viewpoint_generatorNodelet" type="viewpoint_generator::viewpoint_generatorNodelet" base_class_type="nodelet::Nodelet">
+    <description>
+      Viewpoint Generation
+    </description>
+  </class>
+</library>

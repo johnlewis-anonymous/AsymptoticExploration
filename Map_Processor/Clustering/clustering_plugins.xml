@@ -1,0 +1,7 @@
+<library path="lib/libclustering_nodelet">
+<class name="clustering/ClusteringNodelet"
+        type="clustering::ClusteringNodelet"
+        base_class_type="nodelet::Nodelet">
+    <description>Clustering node</description>
+  </class>
+</library>

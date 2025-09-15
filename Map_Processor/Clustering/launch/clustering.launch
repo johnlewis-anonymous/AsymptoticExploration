@@ -1,0 +1,13 @@
+<launch>
+<!-- Launch the clustering_node -->
+<arg name="robot_namespace" default="$(env UAV_NAME)"/>
+<group ns="$(arg robot_namespace)">
+    <rosparam file="$(find clustering)/config/parameters.yaml" subst_value="true" />
+    <node pkg="clustering"
+            type="clustering_node"
+            name="clustering"
+            output="screen">
+        <remap from="~FRONTIERS_TOPIC" to="/$(arg robot_namespace)/octomap_frontier_processor/frontiers"/>
+    </node>
+</group>
+</launch>
