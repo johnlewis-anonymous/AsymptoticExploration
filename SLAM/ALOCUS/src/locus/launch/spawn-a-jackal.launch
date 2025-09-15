@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+
+<launch>
+  <arg name="ns" default="J0"/>
+  <arg name="x" default="0"/> 
+  <arg name="y" default="0"/>
+  <arg name="z" default="0"/>
+  <arg name="yaw" default="0.0"/>
+  <arg name="latitude" default="38.54026098968023"/>
+  <arg name="longitude" default="-7.962949545159461"/> 
+  <arg name="heading" default="90"/> 
+  <arg name="yawoffset" default="0.0"/> 
+
+  <!-- Adding it for appending LOCUS2.0 window -->
+  <arg name="move_base_global_box_size" default="10"/>
+  <arg name="move_base_local_box_size" default="5"/>
+
+    <!-- FOR ROS MELODIC -->
+    <!--include file="$(find timed_roslaunch)/timed_roslaunch.launch"-->
+    <!-- FOR ROS KINETIC -->
+    <include file="$(find multi_jackal_tutorials)/launch/evora_jackal.launch">
+      <arg name="ns" default="$(arg ns)" />
+      <arg name="x" value="$(arg x)"/> 
+      <arg name="y" value="$(arg y)"/>
+      <arg name="z" value="$(arg z)"/>
+      <arg name="yaw" value="$(arg yaw)"/>
+      <arg name="use_waypoint_coordenator" value="false"/>
+      <arg name="use_gps_pose_relay" value="true"/>
+      <!-- <arg name="use_navsat" value="false"/> -->
+      <arg name="use_global_tf" value="false"/>
+      <arg name="latitude"  value="$(arg latitude)"/>
+      <arg name="longitude" value="$(arg longitude)"/> 
+      <arg name="heading" value="$(arg heading)"/> 
+      <arg name="yawoffset" value="$(arg yawoffset)"/> 
+      <arg name="move_base_global_box_size" value="$(arg move_base_global_box_size)"/>
+      <arg name="move_base_local_box_size" value="$(arg move_base_local_box_size)"/>    
+    </include>
+    
+    <!-- <include ns="$(arg ns)" file="$(find jackal_robot_localization)/launch/navsat_transform_only_jackal_sim.launch">
+    <arg name="ns" default="$(arg ns)" />
+    </include> -->
+    
+
+    <node ns="$(arg ns)" pkg="jackal_robot_localization" type="ekf_localization_node" name="ekf_localization_global">
+        <rosparam command="load" file="$(find jackal_robot_localization)/params/ekf_jackal_matching_sim.yaml" subst_value="true"/>
+        <remap from="/$(arg ns)/odometry/filtered" to="/$(arg ns)/jackal_robot_localization/robot_pose"/>
+    </node> 
+
+</launch>

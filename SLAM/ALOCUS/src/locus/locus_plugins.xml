@@ -1,0 +1,7 @@
+<library path="lib/liblocus_nodelet">
+<class name="locus/LocusNodelet"
+        type="locus::LocusNodelet"
+        base_class_type="nodelet::Nodelet">
+    <description>Locus</description>
+  </class>
+</library>

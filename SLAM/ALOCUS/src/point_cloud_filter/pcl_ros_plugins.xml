@@ -1,0 +1,17 @@
+<library path="lib/libpoint_cloud_filter">
+  <class name="point_cloud_filter/BodyFilter"
+         type="point_cloud_filter::BodyFilter"
+         base_class_type="nodelet::Nodelet">
+    <description>Filter robot body from input pointcloud</description>
+  </class>
+    <class name="point_cloud_filter/CustomVoxelGrid"
+         type="point_cloud_filter::CustomVoxelGrid"
+         base_class_type="nodelet::Nodelet">
+    <description>Custom Voxel Filter with bigger leaf size</description>
+  </class>
+  <class name="point_cloud_filter/NormalComputation"
+         type="point_cloud_filter::NormalComputation"
+         base_class_type="nodelet::Nodelet">
+    <description>Compute normals from input pointcloud</description>
+  </class>
+</library>

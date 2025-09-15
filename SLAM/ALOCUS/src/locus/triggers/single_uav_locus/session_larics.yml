@@ -1,0 +1,61 @@
+# do not modify these
+root: ./
+name: simulation
+socket_name: mrs
+attach: false
+tmux_options: -f /etc/ctu-mrs/tmux.conf
+# you can modify these
+pre_window: export UAV_NAME=uav1; export RUN_TYPE=simulation; export UAV_TYPE=x500; sgig; export ROS_LOG_DIR=~/Documents/Logs/ROS/
+startup_window: status
+windows:
+  - roscore:
+      layout: tiled
+      panes:
+        - roscore
+  - gazebo:
+      layout: tiled
+      panes:
+        # - waitForRos; roslaunch mrs_uav_gazebo_simulation simulation.launch world_file:=`rospack find visualizer`/worlds/MRS/worlds/forest_shortened.world gui:=false
+        # - waitForRos; roslaunch mrs_uav_gazebo_simulation simulation.launch world_file:=`rospack find visualizer`/worlds/larics/worlds/house.world gui:=false
+        - waitForRos; roslaunch mrs_uav_gazebo_simulation simulation.launch world_file:=`rospack find visualizer`/worlds/larics/worlds/large_environment.world gui:=false
+        # - waitForRos; roslaunch mrs_uav_gazebo_simulation simulation.launch world_file:=`rospack find visualizer`/worlds/tugbot_depot/tugbot_depot.sdf gui:=false
+        # - waitForGazebo; rosservice call /mrs_drone_spawner/spawn "1 --$UAV_TYPE --enable-livox --enable-rangefinder update_rate:=10 --pos 52 52 0.3 0.0"  #Forest
+        # - waitForGazebo; rosservice call /mrs_drone_spawner/spawn "1 --$UAV_TYPE --enable-livox --enable-rangefinder update_rate:=10 --pos -15 10 0 0"  #House
+        - waitForGazebo; rosservice call /mrs_drone_spawner/spawn "1 --$UAV_TYPE --enable-livox --enable-rangefinder update_rate:=10 --pos -60 80 0 0"  #Large environment
+        # - waitForGazebo; rosservice call /mrs_drone_spawner/spawn "1 --$UAV_TYPE --enable-livox --enable-rangefinder update_rate:=10 --pos -6 -5 0.3 0.0" #tugboat
+  - status:
+      layout: tiled
+      panes:
+        - waitForHw; roslaunch mrs_uav_status status.launch
+  - hw_api:
+      layout: tiled
+      panes:
+        - waitForTime; roslaunch mrs_uav_px4_api api.launch
+  - core:
+      layout: tiled
+      panes:
+        - waitForHw; roslaunch mrs_uav_core core.launch
+          platform_config:=`rospack find mrs_uav_gazebo_simulation`/config/mrs_uav_system/$UAV_TYPE.yaml
+          custom_config:=./config/custom_config.yaml
+          world_config:=./config/world_config.yaml
+          network_config:=./config/network_config.yaml
+  - takeoff:
+      layout: tiled
+      panes:
+        - waitForHw; roslaunch mrs_uav_autostart automatic_start.launch; exit
+        - waitForControl; rosservice call /$UAV_NAME/hw_api/arming 1; sleep 2; rosservice call /$UAV_NAME/hw_api/offboard; exit
+  - slam:
+      layout: tiled
+      panes: 
+        - waitForControl; roslaunch locus locus_uav_nodelets_livox.launch robot_namespace:=$UAV_NAME #livox
+        - waitForControl; roslaunch mrs_octomap_planner octomap_planner_larics.launch
+  - exploration:
+      layout: tiled
+      panes:
+        # - waitForControl; source /home/colorfulcraze/Documents/Baseline/Frontiers/devel/setup.bash; roslaunch uav_frontier_exploration_3d frontier_server.launch  config_filename:=$(rospack find uav_frontier_exploration_3d)/config/kopterworx_exploration_sim_house.yaml
+        - waitForControl; source /home/colorfulcraze/Documents/Baseline/Frontiers/devel/setup.bash; roslaunch uav_frontier_exploration_3d frontier_server.launch  config_filename:=$(rospack find uav_frontier_exploration_3d)/config/kopterworx_exploration_sim_large_env.yaml
+  - rviz:
+      layout: tiled
+      panes:
+        - waitForHw; roslaunch mrs_rviz_plugins load_robot.launch
+        - waitForControl; source /home/colorfulcraze/Documents/Baseline/Frontiers/devel/setup.bash; rosrun rviz rviz -d `rospack find uav_frontier_exploration_3d`/rviz/cartographer_and_frontier.rviz

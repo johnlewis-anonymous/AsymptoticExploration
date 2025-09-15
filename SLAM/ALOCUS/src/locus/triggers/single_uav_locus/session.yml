@@ -1,0 +1,65 @@
+# do not modify these
+root: ./
+name: simulation
+socket_name: mrs
+attach: false
+tmux_options: -f /etc/ctu-mrs/tmux.conf
+# you can modify these
+pre_window: export UAV_NAME=uav1; export RUN_TYPE=simulation; export UAV_TYPE=x500; sgig; export ROS_LOG_DIR=~/Documents/Logs/ROS/
+startup_window: status
+windows:
+  - roscore:
+      layout: tiled
+      panes:
+        - roscore
+  - gazebo:
+      layout: tiled
+      panes:
+        - waitForRos; roslaunch mrs_uav_gazebo_simulation simulation.launch world_file:=`rospack find visualizer`/worlds/MRS/worlds/forest_shortened.world gui:=false
+        # - waitForRos; roslaunch mrs_uav_gazebo_simulation simulation.launch world_file:=`rospack find visualizer`/worlds/tugbot_depot/tugbot_depot.sdf gui:=false
+        - waitForGazebo; rosservice call /mrs_drone_spawner/spawn "1 --$UAV_TYPE --enable-livox --enable-rangefinder update_rate:=10 --pos 52 52 0.3 0.0"
+        # - waitForGazebo; rosservice call /mrs_drone_spawner/spawn "1 --$UAV_TYPE --enable-livox --enable-rangefinder update_rate:=10 --pos -6 -5 0.3 0.0" #tugboat
+  - status:
+      layout: tiled
+      panes:
+        - waitForHw; roslaunch mrs_uav_status status.launch
+  - hw_api:
+      layout: tiled
+      panes:
+        - waitForTime; roslaunch mrs_uav_px4_api api.launch
+  - core:
+      layout: tiled
+      panes:
+        - waitForHw; roslaunch mrs_uav_core core.launch
+          platform_config:=`rospack find mrs_uav_gazebo_simulation`/config/mrs_uav_system/$UAV_TYPE.yaml
+          custom_config:=./config/custom_config.yaml
+          world_config:=./config/world_config.yaml
+          network_config:=./config/network_config.yaml
+  - takeoff:
+      layout: tiled
+      panes:
+        - waitForHw; roslaunch mrs_uav_autostart automatic_start.launch; exit
+        - waitForControl; rosservice call /$UAV_NAME/hw_api/arming 1; sleep 2; rosservice call /$UAV_NAME/hw_api/offboard; exit
+  - rviz:
+      layout: tiled
+      panes:
+        - waitForHw; roslaunch mrs_rviz_plugins load_robot.launch
+        # - waitForHw; roslaunch mrs_rviz_plugins rviz_interface.launch
+        - waitForHw; roscd locus; rosrun rviz rviz -d rviz/uav2_locus.rviz
+        - waitForTakeoff; roslaunch visualizer visualizer.launch robot_namespace:=$UAV_NAME
+
+  - octomap_frontier_slam:
+      layout: tiled
+      panes:
+        - waitForControl; sleep 3; ~/.i3/layout_manager.sh ./layout.json; exit
+        - waitForControl; roslaunch locus locus_uav_nodelets_livox.launch robot_namespace:=$UAV_NAME #livox
+        - waitForControl; roslaunch octomapper_frontier_processor octomap_frontier_processor_nodelet.launch robot_namespace:=$UAV_NAME
+        - waitForControl; roslaunch clustering clustering_nodelet.launch robot_namespace:=$UAV_NAME
+
+  - activeness:
+      layout: tiled
+      panes:
+        - waitForHw; roslaunch mrs_octomap_planner octomap_planner.launch
+        - waitForHw; roslaunch viewpoint_generator viewpoint_generator_nodelet.launch
+        - waitForTakeoff; sleep 1; roslaunch activeness activeness.launch 
+        - waitForTakeoff; roslaunch exploration_analysis exploration_analysis.launch 

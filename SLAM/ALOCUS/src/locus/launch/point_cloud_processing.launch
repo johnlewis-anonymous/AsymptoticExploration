@@ -1,0 +1,91 @@
+<launch>
+ 
+    <arg name="robot_namespace" default="robot"/>
+
+    <arg name="number_of_velodynes" default="3" />
+    <arg name="b_use_multiple_pc" value="$(eval arg('number_of_velodynes') > 1)"/>
+
+    <arg if="$(arg b_use_multiple_pc)" name="pc_input" value="combined_point_cloud_filtered"/>
+    <arg unless="$(arg b_use_multiple_pc)" name="pc_input" value="velodyne_points/transformed"/>
+
+    <arg name="pc_trans_in_0" default="velodyne_points/transformed"/>
+    <arg name="pc_trans_in_1" default="velodyne_front/velodyne_points/transformed"/>
+    <arg name="pc_trans_in_2" default="velodyne_rear/velodyne_points/transformed"/>
+
+    <group ns="$(arg robot_namespace)">
+
+        <node pkg="locus" name="sensors_health_monitor" type="sensors_health_monitor.py" output="screen">
+            <remap from="failure_detection" to="point_cloud_merger_lo/failure_detection"/>
+            <remap from="resurrection_detection" to="point_cloud_merger_lo/resurrection_detection"/>
+        </node>
+   
+        <node pkg="nodelet"
+            type="nodelet"
+            name="transform_points_base_link"
+            args="standalone pcl/PassThrough">
+            <remap from="~input" to="velodyne_points"/>
+            <remap from="~output" to="$(arg pc_trans_in_0)"/>
+            <rosparam subst_value="true">
+                filter_field_name: z
+                filter_limit_min: -100
+                filter_limit_max: 100
+                output_frame: $(arg robot_namespace)/base_link
+            </rosparam>
+        </node>
+
+        <node if="$(eval arg('number_of_velodynes') > 1)"
+            pkg="nodelet"
+            type="nodelet"
+            name="transform_points_base_link_front"
+            args="standalone pcl/PassThrough">
+            <remap from="~input" to="velodyne_front/velodyne_points"/>
+            <remap from="~output" to="$(arg pc_trans_in_1)"/>
+            <rosparam subst_value="true">
+                filter_field_name: z
+                filter_limit_min: -100
+                filter_limit_max: 100
+                output_frame: $(arg robot_namespace)/base_link
+            </rosparam>
+        </node>
+
+        <node if="$(eval arg('number_of_velodynes') > 2)"
+            pkg="nodelet"
+            type="nodelet"
+            name="transform_points_base_link_rear"
+            args="standalone pcl/PassThrough">
+            <remap from="~input" to="velodyne_rear/velodyne_points"/>
+            <remap from="~output" to="$(arg pc_trans_in_2)"/>
+            <rosparam subst_value="true">
+                filter_field_name: z
+                filter_limit_min: -100
+                filter_limit_max: 100
+                output_frame: $(arg robot_namespace)/base_link
+            </rosparam>
+        </node>
+
+        <node if="$(arg b_use_multiple_pc)" pkg="point_cloud_merger" type="point_cloud_merger_node" name="point_cloud_merger_lo" output="screen">
+            <rosparam file="$(find point_cloud_merger)/config/parameters.yaml"/>
+            <param name="merging/number_of_velodynes" value="$(arg number_of_velodynes)"/>
+            <remap from="~pcld0" to="$(arg pc_trans_in_0)"/>
+            <remap from="~pcld1" to="$(arg pc_trans_in_1)"/>
+            <remap from="~pcld2" to="$(arg pc_trans_in_2)"/>
+            <remap from="~combined_point_cloud" to="combined_point_cloud"/>
+        </node>
+
+        <node if="$(arg b_use_multiple_pc)" pkg="nodelet" type="nodelet" name="pcl_manager" args="manager" output="screen" respawn="true"/>
+        <node if="$(arg b_use_multiple_pc)" pkg="nodelet" type="nodelet" name="voxel_grid" args="load pcl/VoxelGrid pcl_manager" output="screen" respawn="true">
+            <remap from="~input" to="combined_point_cloud" />
+            <remap from="~output" to="combined_point_cloud_filtered" />
+            <rosparam subst_value="true">
+            filter_field_name: z
+            filter_limit_min: -100
+            filter_limit_max: 100
+            filter_limit_negative: False
+            leaf_size: 0.1
+            output_frame: $(arg robot_namespace)/base_link
+            </rosparam>
+        </node>
+       
+    </group>
+ 
+</launch>
