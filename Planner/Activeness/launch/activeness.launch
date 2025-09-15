@@ -1,0 +1,18 @@
+<launch>
+<arg name="robot_namespace" default="$(env UAV_NAME)"/>
+<group ns="$(arg robot_namespace)">
+    <rosparam file="$(find activeness)/config/parameters.yaml" subst_value="true" />
+    <node pkg="activeness"
+            type="activeness_node"
+            name="activeness"
+            output="screen">
+        <remap from="~DIAGNOSTICS_TOPIC" to="/$(arg robot_namespace)/control_manager/diagnostics"/>
+        <remap from="~BEST_VIEWPOINT_TOPIC" to="/$(arg robot_namespace)/viewpoint_generator/best_view"/>
+        <remap from="~PLANNER_SERVICE" to="/$(arg robot_namespace)/octomap_planner/reference"/>
+        <remap from="~OCTOMAP_TOPIC" to="/$(arg robot_namespace)/octomap_frontier_processor/octomap"/>
+        <remap from="~POSE_TOPIC" to="/$(arg robot_namespace)/locus/odometry"/>
+        <remap from="~TRAJECTORY_SERVICE" to="/$(arg robot_namespace)/control_manager/trajectory_reference"/>
+
+    </node>
+</group>
+</launch>

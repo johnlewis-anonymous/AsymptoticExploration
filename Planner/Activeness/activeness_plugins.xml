@@ -1,0 +1,7 @@
+<library path="lib/libactiveness_nodelet">
+  <class name="activeness/activenessNodelet" type="activeness::activenessNodelet" base_class_type="nodelet::Nodelet">
+    <description>
+      Make it move.
+    </description>
+  </class>
+</library>

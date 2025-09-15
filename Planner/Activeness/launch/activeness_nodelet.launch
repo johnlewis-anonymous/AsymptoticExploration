@@ -1,0 +1,22 @@
+<launch>
+<!-- Launch the octomapping_frontier_detection_node -->
+<arg name="robot_namespace" default="$(env UAV_NAME)"/>
+<arg name="nodelet_manager" default="$(arg robot_namespace)_nodelet_manager" />
+<arg name="respawn" value="true"/>
+
+<group ns="$(arg robot_namespace)">
+    <rosparam file="$(find activeness)/config/parameters.yaml" subst_value="true"/>
+    
+    <!-- Match the regular node name exactly -->
+    <node pkg="nodelet" type="nodelet" name="activeness" 
+          args="load activeness/activenessNodelet $(arg nodelet_manager)" 
+          output="screen" 
+          respawn="$(arg respawn)">
+        <remap from="~DIAGNOSTICS_TOPIC" to="/$(arg robot_namespace)/control_manager/diagnostics"/>
+        <remap from="~BEST_VIEWPOINT_TOPIC" to="/$(arg robot_namespace)/activeness/best_view"/>
+        <remap from="~PLANNER_SERVICE" to="/$(arg robot_namespace)/octomap_planner/reference"/>
+        <remap from="~OCTOMAP_TOPIC" to="/$(arg robot_namespace)/octomap_frontier_processor/octomap"/>
+        
+    </node>
+</group>
+</launch>
